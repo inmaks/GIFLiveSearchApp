@@ -13,8 +13,8 @@ fun GifList(gifArr: GifArray?) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(gifArr.gifs.size) {i->
-                GifCard(gifArr.gifs[i])
+            items(it.gifs.size) {i->
+                GifCard(it.gifs[i])
             }
         }
     } ?: Text(text = "Please start searching...")

@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -19,6 +20,7 @@ import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.ImageDecoderDecoder
 import com.chili.GIFLiveSearch.Data.Gif
+import com.chili.GIFLiveSearch.TitleProcessing
 
 @Composable
 fun GifCard(gif: Gif, modifier: Modifier = Modifier) {
@@ -45,13 +47,14 @@ fun GifCard(gif: Gif, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .clip(MaterialTheme.shapes.large)
                 .fillMaxWidth()
-                .aspectRatio(3f / 2f)
+                .aspectRatio(3f / 2f),
+            contentScale = ContentScale.Crop
         )
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = gif.title,
+                text = TitleProcessing.removeGIFnBy(gif.title),
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -59,7 +62,7 @@ fun GifCard(gif: Gif, modifier: Modifier = Modifier) {
                 text = buildAnnotatedString {
                     append("by ")
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(gif.gifAuthor.username)
+                        append(gif.gifAuthor.username ?: TitleProcessing.getAuthorFrom(gif.title))
                     }
                 },
                 style = MaterialTheme.typography.bodyMedium

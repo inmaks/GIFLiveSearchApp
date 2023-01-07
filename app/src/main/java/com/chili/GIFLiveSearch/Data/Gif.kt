@@ -16,7 +16,7 @@ data class Gif(
     @SerialName("title")
     val title: String,
     @SerialName("user")
-    val gifAuthor: GifAuthor = GifAuthor("unknown")) {
+    val gifAuthor: GifAuthor = GifAuthor(null)) {
 }
 
 @Serializable
@@ -27,8 +27,9 @@ data class GifImages(
 
 @Serializable
 data class GifAuthor(
-    @SerialName("username")
-    val username: String) {
+    @SerialName("display_name")
+    val username: String? = null
+) {
 }
 
 @Serializable
