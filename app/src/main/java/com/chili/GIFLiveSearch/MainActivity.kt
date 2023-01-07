@@ -3,6 +3,7 @@ package com.chili.GIFLiveSearch
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -12,58 +13,61 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
-import com.chili.GIFLiveSearch.API.APIGiphy
 import com.chili.GIFLiveSearch.Data.GifArray
 import com.chili.GIFLiveSearch.ui.theme.GIFLiveSearchTheme
-import kotlinx.coroutines.runBlocking
+import com.chili.GIFLiveSearch.viewmodels.MainViewModel
 
 class MainActivity : ComponentActivity() {
+    private val model: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             GIFLiveSearchTheme {
-                Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colors.background
-                ) {
-                    MainScreen()
-                }
+                Scaffold(
+                    topBar = { SearchView(model) },
+                    modifier = Modifier.fillMaxSize(),
+                    content= { padding ->
+                        Box(modifier = Modifier.padding(padding)) {
+                            MainScreen(model)
+                        }
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun MainScreen() {
-    var q: String by rememberSaveable { mutableStateOf("") }
-    Column {
-        SearchView(q, onTextChange = {q = it}, onCrossClick = {q = ""})
-        GifGrid(q)
-    }
+fun MainScreen(mainViewModel: MainViewModel) {
+
+    val gifs: GifArray? by mainViewModel.gifs.observeAsState(null)
+
+    GifGrid(gifs)
 }
 
 @Composable
-fun SearchView(q: String, onTextChange: (String) -> Unit, onCrossClick: () -> Unit) {
+fun SearchView(mainViewModel: MainViewModel) {
+
+    val q: String by mainViewModel.q.observeAsState("")
 
     TextField(
         value = q,
-        onValueChange = onTextChange,
+        onValueChange = { value ->
+            mainViewModel.onTextChange(value) },
         modifier = Modifier
             .fillMaxWidth(),
         textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
@@ -79,7 +83,7 @@ fun SearchView(q: String, onTextChange: (String) -> Unit, onCrossClick: () -> Un
         trailingIcon = {
             if (q != "") {
                 IconButton(
-                    onClick = onCrossClick
+                    onClick = {mainViewModel.onCrossClick()}
                 ) {
                     Icon(
                         Icons.Default.Close,
@@ -106,44 +110,34 @@ fun SearchView(q: String, onTextChange: (String) -> Unit, onCrossClick: () -> Un
     )
 }
 
+
+
 @Composable
-fun GifGrid(q: String) {
-
-    val apiGiphy: APIGiphy = APIGiphy()
-
-    val gifArr: GifArray = runBlocking {apiGiphy.getGifs(q) }
-
+fun GifGrid(gifArr:GifArray?) {
     val imageLoader = ImageLoader.Builder(LocalContext.current)
         .components {
             add(ImageDecoderDecoder.Factory())
         }
         .build()
-
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 150.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(gifArr.gifs.size) {i->
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                AsyncImage(
-                    imageLoader = imageLoader,
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(gifArr.gifs[i].images.original.url)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null,
-                    modifier = Modifier.size(150.dp)
-                )
+    gifArr?.let {
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 150.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(gifArr!!.gifs.size) {i->
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    AsyncImage(
+                        imageLoader = imageLoader,
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(gifArr.gifs[i].images.original.url)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = null,
+                        modifier = Modifier.size(150.dp)
+                    )
+                }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    GIFLiveSearchTheme {
-        MainScreen()
-    }
+    } ?: Text(text = "Please start searching...")
 }
