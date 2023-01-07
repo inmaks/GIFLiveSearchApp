@@ -3,19 +3,27 @@ package com.chili.GIFLiveSearch
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.ImageDecoderDecoder
@@ -30,12 +38,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             GIFLiveSearchTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colors.background
                 ) {
-                    Init()
+                    MainScreen()
                 }
             }
         }
@@ -43,15 +50,69 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Init() {
-    GifGrid()
+fun MainScreen() {
+    var q: String by rememberSaveable { mutableStateOf("") }
+    Column {
+        SearchView(q, onTextChange = {q = it}, onCrossClick = {q = ""})
+        GifGrid(q)
+    }
 }
 
 @Composable
-fun GifGrid() {
+fun SearchView(q: String, onTextChange: (String) -> Unit, onCrossClick: () -> Unit) {
+
+    TextField(
+        value = q,
+        onValueChange = onTextChange,
+        modifier = Modifier
+            .fillMaxWidth(),
+        textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
+        leadingIcon = {
+            Icon(
+                Icons.Default.Search,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(15.dp)
+                    .size(24.dp)
+            )
+        },
+        trailingIcon = {
+            if (q != "") {
+                IconButton(
+                    onClick = onCrossClick
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .size(24.dp)
+                    )
+                }
+            }
+        },
+        singleLine = true,
+        shape = RectangleShape,
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = Color.White,
+            cursorColor = Color.White,
+            leadingIconColor = Color.White,
+            trailingIconColor = Color.White,
+            backgroundColor = MaterialTheme.colors.primary,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        )
+    )
+}
+
+@Composable
+fun GifGrid(q: String) {
+
     val apiGiphy: APIGiphy = APIGiphy()
 
-    var gifArr: GifArray = runBlocking {apiGiphy.getGifs("cheeseburger") }
+    val gifArr: GifArray = runBlocking {apiGiphy.getGifs(q) }
+
     val imageLoader = ImageLoader.Builder(LocalContext.current)
         .components {
             add(ImageDecoderDecoder.Factory())
@@ -59,7 +120,9 @@ fun GifGrid() {
         .build()
 
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 128.dp)
+        columns = GridCells.Adaptive(minSize = 150.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(gifArr.gifs.size) {i->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -70,7 +133,7 @@ fun GifGrid() {
                         .crossfade(true)
                         .build(),
                     contentDescription = null,
-                    modifier = Modifier.size(128.dp)
+                    modifier = Modifier.size(150.dp)
                 )
             }
         }
@@ -81,6 +144,6 @@ fun GifGrid() {
 @Composable
 fun DefaultPreview() {
     GIFLiveSearchTheme {
-        Init()
+        MainScreen()
     }
 }
