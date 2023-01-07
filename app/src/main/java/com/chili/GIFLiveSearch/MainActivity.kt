@@ -125,7 +125,7 @@ fun GifGrid(gifArr:GifArray?) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(gifArr!!.gifs.size) {i->
+            items(gifArr.gifs.size) {i->
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     AsyncImage(
                         imageLoader = imageLoader,
