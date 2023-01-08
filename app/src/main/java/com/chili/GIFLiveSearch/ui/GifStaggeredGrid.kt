@@ -2,6 +2,7 @@ package com.chili.GIFLiveSearch.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.icons.Icons
@@ -9,7 +10,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,14 +18,15 @@ import com.chili.GIFLiveSearch.Data.GifArray
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GifStaggeredGrid(gifArr: GifArray?) {
+fun GifStaggeredGrid(gifArr: GifArray?, state: LazyStaggeredGridState) {
 
     gifArr?.let {
-        if(!it.gifs.isEmpty()) {
+        if(it.gifs.isNotEmpty()) {
             LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Fixed(2),
+                columns = StaggeredGridCells.Adaptive(150.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                state = state
             ) {
                 items(it.gifs.size) {i->
                     GifCard(it.gifs[i])
@@ -75,5 +77,14 @@ fun GifStaggeredGrid(gifArr: GifArray?) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.wrapContentSize()
         )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+fun LazyStaggeredGridState.isScrolledToTheEnd(): Boolean {
+    return if(layoutInfo.visibleItemsInfo.isNotEmpty()) {
+        layoutInfo.visibleItemsInfo.last().index == layoutInfo.totalItemsCount - 1
+    } else {
+        false
     }
 }

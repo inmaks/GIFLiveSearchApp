@@ -10,6 +10,8 @@ import kotlinx.coroutines.*
 
 class MainViewModel : ViewModel(){
 
+    private var loadingNew: Boolean = false
+
     private val _q : MutableLiveData<String> = MutableLiveData("")
 
     val q: LiveData<String> = _q
@@ -22,6 +24,22 @@ class MainViewModel : ViewModel(){
 
         _q.value = newText
 
+    }
+
+    fun onScrolledToTheEnd(){
+        if(!loadingNew) {
+            loadingNew = true
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    GifRepo.getGifs(q.value!!, offset = _gifs.value!!.gifs.size)
+                }.onSuccess {
+                    _gifs.value!!.gifs.addAll(it.gifs)
+                    loadingNew = false
+                }.onFailure {
+                    loadingNew = false
+                }
+            }
+        }
     }
 
     private fun startRepeatingJob(timeInterval: Long): Job {

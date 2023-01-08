@@ -6,7 +6,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.chili.GIFLiveSearch.Data.GifArray
 import com.chili.GIFLiveSearch.ui.GifStaggeredGrid
 import com.chili.GIFLiveSearch.ui.SearchView
+import com.chili.GIFLiveSearch.ui.isScrolledToTheEnd
 import com.chili.GIFLiveSearch.ui.theme.GIFLiveSearchTheme
 import com.chili.GIFLiveSearch.viewmodels.MainViewModel
 
@@ -37,7 +40,12 @@ class MainActivity : ComponentActivity() {
                         content = { padding ->
                             Column(modifier = Modifier
                                 .fillMaxSize()
-                                .padding(top = padding.calculateTopPadding() + 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)) {
+                                .padding(
+                                    top = padding.calculateTopPadding() + 16.dp,
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    bottom = 16.dp
+                                )) {
                                 MainScreen(model)
                             }
                         }
@@ -48,12 +56,21 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(mainViewModel: MainViewModel) {
 
     val gifs: GifArray? by mainViewModel.gifs.observeAsState(null)
 
-    GifStaggeredGrid(gifs)
+    val state = rememberLazyStaggeredGridState(
+        initialFirstVisibleItemIndex = 0
+    )
+
+    if(state.isScrolledToTheEnd()) {
+        mainViewModel.onScrolledToTheEnd()
+    }
+
+    GifStaggeredGrid(gifs, state)
 }
 
 
