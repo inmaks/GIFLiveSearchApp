@@ -83,7 +83,7 @@ fun GifStaggeredGrid(gifArr: GifArray?, state: LazyStaggeredGridState) {
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyStaggeredGridState.isScrolledToTheEnd(): Boolean {
     return if(layoutInfo.visibleItemsInfo.isNotEmpty()) {
-        layoutInfo.visibleItemsInfo.last().index == layoutInfo.totalItemsCount - 1
+        layoutInfo.visibleItemsInfo.last().index >= layoutInfo.totalItemsCount - 11
     } else {
         false
     }
