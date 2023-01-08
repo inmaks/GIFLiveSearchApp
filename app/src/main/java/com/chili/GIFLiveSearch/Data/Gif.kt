@@ -3,6 +3,9 @@ package com.chili.GIFLiveSearch.Data
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+//This classes are for JSON parser to work properly, couldn't find any better way to do this
+//P.S. I would prefer developing this API using GraphQL
+
 @Serializable
 data class GifArray(
     @SerialName("data")

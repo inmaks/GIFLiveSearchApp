@@ -9,6 +9,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
+//class because clients needs to be recreated after request trigger
 class KtorClient {
     val client = HttpClient(CIO){
         install(ContentNegotiation) {

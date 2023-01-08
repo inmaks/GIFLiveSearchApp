@@ -5,8 +5,11 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 
 object GifRepo {
+    //Gets all needed info from API
     suspend fun getGifs(querySearch: String, limit: Int = 25, offset: Int = 0): GifArray {
+
         val ktorClient: KtorClient = KtorClient()
+
         return ktorClient.client.use {
             it.get(APIConsts.BaseUrl){
                 url {
@@ -14,10 +17,8 @@ object GifRepo {
                     parameters.append("q", querySearch)
                     parameters.append("limit", limit.toString())
                     parameters.append("offset", offset.toString())
-
                 }
             }
         }.body()
     }
-
 }

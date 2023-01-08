@@ -60,8 +60,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(mainViewModel: MainViewModel) {
 
+    //did how it was told in Google developers tutorials
     val gifs: GifArray? by mainViewModel.gifs.observeAsState(null)
 
+    //Needed for the isScrolledToTheEnd check
     val state = rememberLazyStaggeredGridState(
         initialFirstVisibleItemIndex = 0
     )

@@ -20,12 +20,16 @@ import com.chili.GIFLiveSearch.Data.GifArray
 @Composable
 fun GifStaggeredGrid(gifArr: GifArray?, state: LazyStaggeredGridState) {
 
+    //Null check
     gifArr?.let {
         if(it.gifs.isNotEmpty()) {
             LazyVerticalStaggeredGrid(
+                //Adaptive for bigger screens and Landscape mode
                 columns = StaggeredGridCells.Adaptive(150.dp),
+                //Dividers
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
+                //We pass state for isScrolledToTheEnd check to work
                 state = state
             ) {
                 items(it.gifs.size) {i->
@@ -33,6 +37,7 @@ fun GifStaggeredGrid(gifArr: GifArray?, state: LazyStaggeredGridState) {
                 }
             }
         } else {
+            //If API didn't return anything we show simple 404
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -58,7 +63,9 @@ fun GifStaggeredGrid(gifArr: GifArray?, state: LazyStaggeredGridState) {
                 )
             }
         }
-    } ?: Column(
+    } ?:
+    //Just to show something before user starts searching
+    Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -80,9 +87,12 @@ fun GifStaggeredGrid(gifArr: GifArray?, state: LazyStaggeredGridState) {
     }
 }
 
+//Creating extension for isScrolledToTheEnd
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyStaggeredGridState.isScrolledToTheEnd(): Boolean {
+    //If is needed to skip check if list is empty
     return if(layoutInfo.visibleItemsInfo.isNotEmpty()) {
+        // 11 to start loading new gifs before("seamlessly") it is scrolled to end
         layoutInfo.visibleItemsInfo.last().index >= layoutInfo.totalItemsCount - 11
     } else {
         false

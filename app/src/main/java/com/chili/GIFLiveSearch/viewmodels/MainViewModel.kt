@@ -8,27 +8,31 @@ import com.chili.GIFLiveSearch.API.GifRepo
 import com.chili.GIFLiveSearch.Data.GifArray
 import kotlinx.coroutines.*
 
-class MainViewModel : ViewModel(){
+class MainViewModel : ViewModel() {
 
     private var loadingNew: Boolean = false
 
-    private val _q : MutableLiveData<String> = MutableLiveData("")
+    //LiveData because it was in google Developers tutorials
+    private val _q: MutableLiveData<String> = MutableLiveData("")
 
     val q: LiveData<String> = _q
 
-    private val _gifs : MutableLiveData<GifArray?> = MutableLiveData(null)
+    private val _gifs: MutableLiveData<GifArray?> = MutableLiveData(null)
 
     val gifs: LiveData<GifArray?> = _gifs
 
-    fun onTextChange(newText: String){
+    fun onTextChange(newText: String) {
 
         _q.value = newText
 
     }
 
-    fun onScrolledToTheEnd(){
-        if(!loadingNew) {
+    fun onScrolledToTheEnd() {
+        //isScrolledToTheEnd triggers all the time it is scrolled to the end
+        //so I need check
+        if (!loadingNew) {
             loadingNew = true
+            //For request not to block other threads
             viewModelScope.launch {
                 kotlin.runCatching {
                     GifRepo.getGifs(q.value!!, offset = _gifs.value!!.gifs.size)
@@ -42,12 +46,14 @@ class MainViewModel : ViewModel(){
         }
     }
 
+    //Background check for updated search
     private fun startRepeatingJob(timeInterval: Long): Job {
         var latestSearched = ""
         return CoroutineScope(Dispatchers.Default).launch {
             while (true) {
+                //Pause to not send request on every input in searchView
                 delay(timeInterval)
-                if(latestSearched != q.value!! && q.value!! != "") {
+                if (latestSearched != q.value!! && q.value!! != "") {
                     latestSearched = q.value!!
                     viewModelScope.launch {
                         kotlin.runCatching {
@@ -63,10 +69,11 @@ class MainViewModel : ViewModel(){
         }
     }
 
-    fun onCrossClick(){
+    fun onCrossClick() {
         _q.value = ""
     }
 
+    //It just works, decided not to break anything :D
     init {
         startRepeatingJob(600)
     }

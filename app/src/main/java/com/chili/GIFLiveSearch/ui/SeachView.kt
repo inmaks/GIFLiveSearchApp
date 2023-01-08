@@ -63,6 +63,7 @@ fun SearchView(mainViewModel: MainViewModel) {
             },
             singleLine = true,
             shape = RectangleShape,
+            //color roles are taken from Material3 guidelines
             colors = TextFieldDefaults.textFieldColors(
                 containerColor  = MaterialTheme.colorScheme.surface,
                 textColor = MaterialTheme.colorScheme.onSurface,
@@ -73,6 +74,7 @@ fun SearchView(mainViewModel: MainViewModel) {
                 disabledIndicatorColor = Color.Transparent
             )
         )
+        //Material guidelines says there has to be "outline"
         Spacer(modifier = Modifier
             .height(1.dp)
             .fillMaxWidth()

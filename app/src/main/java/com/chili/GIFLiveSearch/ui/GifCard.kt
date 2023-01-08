@@ -23,16 +23,17 @@ import com.chili.GIFLiveSearch.TitleProcessing
 @Composable
 fun GifCard(gif: Gif) {
 
+    //imageLoader from Coil to load GIF in Image component
     val imageLoader = ImageLoader.Builder(LocalContext.current)
         .components {
             add(ImageDecoderDecoder.Factory())
         }
         .build()
+
     Column(
-
     ) {
-
         Image(
+            //To load GIFs Asynchronously
             painter = rememberAsyncImagePainter(
                 model = gif.images.original.url,
                 imageLoader = imageLoader
@@ -41,11 +42,13 @@ fun GifCard(gif: Gif) {
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
                 .fillMaxWidth()
+                //AspectRatio is for GIFs to not crop and save it height to staggeredGrid work properly
                 .aspectRatio(gif.images.original.width.toFloat() / gif.images.original.height),
             contentScale = ContentScale.Fit
         )
 
         Text(
+            //If GIF has no title, we print -
             text = if (TitleProcessing.removeGIFnBy(gif.title) == ""){"-"} else {TitleProcessing.removeGIFnBy(gif.title)},
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
