@@ -14,7 +14,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.chili.GIFLiveSearch.Data.GifArray
-import com.chili.GIFLiveSearch.ui.GifList
+import com.chili.GIFLiveSearch.ui.GifStaggeredGrid
 import com.chili.GIFLiveSearch.ui.SearchView
 import com.chili.GIFLiveSearch.ui.theme.GIFLiveSearchTheme
 import com.chili.GIFLiveSearch.viewmodels.MainViewModel
@@ -53,7 +53,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
 
     val gifs: GifArray? by mainViewModel.gifs.observeAsState(null)
 
-    GifList(gifs)
+    GifStaggeredGrid(gifs)
 }
 
 

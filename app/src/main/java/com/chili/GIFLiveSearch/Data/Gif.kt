@@ -35,5 +35,9 @@ data class GifAuthor(
 @Serializable
 data class GifImagesOriginal(
     @SerialName("url")
-    val url: String) {
+    val url: String,
+    @SerialName("height")
+    val height: Int,
+    @SerialName("width")
+    val width: Int) {
 }

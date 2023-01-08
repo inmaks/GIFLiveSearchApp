@@ -28,6 +28,7 @@ class MainViewModel : ViewModel(){
         var latestSearched = ""
         return CoroutineScope(Dispatchers.Default).launch {
             while (true) {
+                delay(timeInterval)
                 if(latestSearched != q.value!! && q.value!! != "") {
                     latestSearched = q.value!!
                     viewModelScope.launch {
@@ -40,7 +41,6 @@ class MainViewModel : ViewModel(){
                         }
                     }
                 }
-                delay(timeInterval)
             }
         }
     }
@@ -50,6 +50,6 @@ class MainViewModel : ViewModel(){
     }
 
     init {
-        startRepeatingJob(500)
+        startRepeatingJob(600)
     }
 }

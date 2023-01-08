@@ -1,9 +1,10 @@
 package com.chili.GIFLiveSearch.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,10 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
@@ -23,21 +21,17 @@ import com.chili.GIFLiveSearch.Data.Gif
 import com.chili.GIFLiveSearch.TitleProcessing
 
 @Composable
-fun GifCard(gif: Gif, modifier: Modifier = Modifier) {
+fun GifCard(gif: Gif) {
 
     val imageLoader = ImageLoader.Builder(LocalContext.current)
         .components {
             add(ImageDecoderDecoder.Factory())
         }
         .build()
-    Card(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    Column(
+
     ) {
+
         Image(
             painter = rememberAsyncImagePainter(
                 model = gif.images.original.url,
@@ -45,28 +39,17 @@ fun GifCard(gif: Gif, modifier: Modifier = Modifier) {
             ),
             contentDescription = null,
             modifier = Modifier
-                .clip(MaterialTheme.shapes.large)
+                .clip(RoundedCornerShape(10.dp))
                 .fillMaxWidth()
-                .aspectRatio(3f / 2f),
-            contentScale = ContentScale.Crop
+                .aspectRatio(gif.images.original.width.toFloat() / gif.images.original.height),
+            contentScale = ContentScale.Fit
         )
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = TitleProcessing.removeGIFnBy(gif.title),
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = buildAnnotatedString {
-                    append("by ")
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(gif.gifAuthor.username ?: TitleProcessing.getAuthorFrom(gif.title))
-                    }
-                },
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
+
+        Text(
+            text = if (TitleProcessing.removeGIFnBy(gif.title) == ""){"-"} else {TitleProcessing.removeGIFnBy(gif.title)},
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+        )
     }
+
 }
