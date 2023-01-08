@@ -14,7 +14,7 @@ Implemented requirements:
 
 Current known bugs:
 - Sometimes search doesn't trigger on last entered letter (couldn't reproduce it constantly to know the exact reason);
-- Sometimes when searching for new gifs, grid doesn't scroll all the way up;
+- Sometimes when searching for new gifs, grid doesn't scroll all the way up (couldn't reproduce it constantly to know the exact reason);
 
 Here is small video that will help You understand main concept:
 
