@@ -18,5 +18,4 @@ Current known bugs:
 
 Here is small video that will help You understand main concept:
 
-https://user-images.githubusercontent.com/46053138/211217495-57debb5b-e78c-43a3-864b-3ae19eca9301.mp4
-
+https://user-images.githubusercontent.com/46053138/211218761-533c29e3-12f8-41e6-b0b2-495f41ba8d12.mp4
